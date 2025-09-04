@@ -89,6 +89,18 @@
             cursor: pointer;
         }
 
+        /* Mobile menu toggle (hidden on desktop) */
+        .mobile-menu-toggle {
+            display: none;
+            background: rgba(255, 255, 255, 0.05);
+            color: rgba(255, 255, 255, 0.9);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 6px;
+            padding: 0.5rem 0.75rem;
+            cursor: pointer;
+            font-size: 1.1rem;
+        }
+
         /* Video background for homepage */
         .video-background {
             position: fixed;
@@ -755,7 +767,24 @@
 
         /* Mobile responsive */
         @media (max-width: 768px) {
-            .nav-menu { display: none; }
+            .nav-container { padding: 0.5rem 1rem; }
+            .mobile-menu-toggle { display: inline-block; }
+            .nav-menu {
+                display: none;
+                position: fixed;
+                top: 96px; /* header height approx */
+                left: 0;
+                right: 0;
+                padding: 1rem;
+                background: rgba(15, 15, 15, 0.98);
+                backdrop-filter: blur(12px);
+                border-top: 1px solid rgba(255, 255, 255, 0.08);
+                flex-direction: column;
+                gap: 0.75rem;
+                z-index: 1001;
+            }
+            .nav-menu.open { display: flex; }
+            .nav-menu a { display: block; padding: 0.75rem 1rem; }
             .hero { padding-left: 5%; }
             .hero-title { font-size: 2.8rem; }
             .two-column, .techniques { grid-template-columns: 1fr; }
@@ -764,6 +793,10 @@
             .sessions-container { grid-template-columns: 1fr; }
             .arrow { display: none; }
             .session-top { height: auto; }
+            /* Reduce big iframes/images for small screens */
+            .participants-page .consent-preview { height: 420px; }
+            .find-us-page .building-image { height: 220px; }
+            .find-us-page .map-embed { height: 220px; }
         }
 
         /* How to Find Us page styles */
@@ -1155,6 +1188,7 @@
             <div class="logo">
                 <img src="image1.png" alt="University Logo">
             </div>
+            <button class="mobile-menu-toggle" id="mobileMenuToggle" aria-label="Toggle navigation">☰</button>
             <ul class="nav-menu">
                 <li><a href="#" data-page="home" class="nav-link active">Home</a></li>
                 <li><a href="#" data-page="study-info" class="nav-link">Study Information</a></li>
@@ -1692,6 +1726,20 @@
                 });
             });
 
+            // Mobile menu toggle
+            const mobileToggle = document.getElementById('mobileMenuToggle');
+            const navMenu = document.querySelector('.nav-menu');
+            if (mobileToggle && navMenu) {
+                mobileToggle.addEventListener('click', function() {
+                    navMenu.classList.toggle('open');
+                });
+                // Close menu on nav click
+                navMenu.addEventListener('click', function(e) {
+                    const link = e.target.closest('a.nav-link');
+                    if (link) navMenu.classList.remove('open');
+                });
+            }
+
             // Feature cards
             document.querySelectorAll('.feature-card[data-page]').forEach(card => {
                 card.addEventListener('click', function() {
@@ -1764,9 +1812,11 @@
             const circleRight = document.getElementById('circleRight');
 
             if (pageId === 'home') {
-                videoBackground.style.display = 'block';
-                circleLeft.style.display = 'block';
-                circleRight.style.display = 'block';
+                // Hide decorative background on very small screens for performance/clarity
+                const isSmall = window.matchMedia('(max-width: 768px)').matches;
+                videoBackground.style.display = isSmall ? 'none' : 'block';
+                circleLeft.style.display = isSmall ? 'none' : 'block';
+                circleRight.style.display = isSmall ? 'none' : 'block';
             } else {
                 videoBackground.style.display = 'none';
                 circleLeft.style.display = 'none';
