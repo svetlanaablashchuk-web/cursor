@@ -1,0 +1,1423 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Brain Aging Study</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #0f0f0f;
+            color: #ffffff;
+            line-height: 1.6;
+        }
+
+        /* Header */
+        .header {
+            background: rgba(15, 15, 15, 0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .language-bar {
+            background: rgba(255, 255, 255, 0.05);
+            text-align: center;
+            padding: 0.4rem;
+            font-size: 0.85rem;
+        }
+
+        .language-link {
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+        }
+
+        .language-link:hover {
+            color: #ffffff;
+        }
+
+        .nav-container {
+            max-width: 1600px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem 3rem;
+        }
+
+        .logo img {
+            width: 192px;
+            height: 72px;
+        }
+
+        .nav-menu {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+
+        .nav-menu a {
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-menu a:hover,
+        .nav-menu a.active {
+            color: #ffffff;
+            background: rgba(44, 95, 95, 0.2);
+        }
+
+        .search-icon {
+            color: rgba(255, 255, 255, 0.7);
+            padding: 0.5rem 1rem;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        /* Video background for homepage */
+        .video-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 1;
+        }
+
+        .video-background video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            filter: brightness(0.3);
+        }
+
+        /* Rotating circles for homepage */
+        .circle-left {
+            position: fixed;
+            left: 20%;
+            top: 60%;
+            width: 60vw;
+            height: 60vw;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-top: 4px solid rgba(255, 255, 255, 0.8);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 5;
+            animation: spinAndSlideLeft 8s ease-out forwards;
+        }
+
+        .circle-right {
+            position: fixed;
+            right: 20%;
+            top: 40%;
+            width: 50vw;
+            height: 50vw;
+            border: 2px solid rgba(255, 255, 255, 0.25);
+            border-bottom: 4px solid rgba(255, 255, 255, 0.7);
+            border-radius: 50%;
+            transform: translate(50%, -50%);
+            z-index: 5;
+            animation: spinAndSlideRight 8s ease-out 0.5s forwards;
+        }
+
+        @keyframes spinAndSlideLeft {
+            0% {
+                transform: translate(-50%, -50%) rotate(0deg);
+                left: 20%;
+                top: 60%;
+                opacity: 1;
+            }
+            20% {
+                transform: translate(-50%, -50%) rotate(180deg);
+                left: 20%;
+                top: 60%;
+                opacity: 1;
+            }
+            100% {
+                transform: translate(-50%, -50%) rotate(360deg);
+                left: -20%;
+                top: -20%;
+                opacity: 0;
+            }
+        }
+
+        @keyframes spinAndSlideRight {
+            0% {
+                transform: translate(50%, -50%) rotate(0deg);
+                right: 20%;
+                top: 40%;
+                opacity: 1;
+            }
+            20% {
+                transform: translate(50%, -50%) rotate(-180deg);
+                right: 20%;
+                top: 40%;
+                opacity: 1;
+            }
+            100% {
+                transform: translate(50%, -50%) rotate(-360deg);
+                right: -20%;
+                top: 100%;
+                opacity: 0;
+            }
+        }
+
+        /* Page management */
+        .page {
+            display: none;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        /* Homepage styles */
+        .hero {
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            padding-left: 8%;
+            position: relative;
+            z-index: 10;
+        }
+
+        .hero-title {
+            font-size: 4rem;
+            font-weight: 300;
+            letter-spacing: 4px;
+            text-shadow: 2px 2px 20px rgba(0, 0, 0, 0.8);
+        }
+
+        .hero-title::after {
+            content: '';
+            display: block;
+            width: 120px;
+            height: 2px;
+            background: linear-gradient(90deg, #ffffff, transparent);
+            margin-top: 20px;
+        }
+
+        .main-content {
+            background: #0f0f0f;
+            padding: 6rem 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 10;
+        }
+
+        .welcome-section {
+            text-align: center;
+            margin-bottom: 6rem;
+        }
+
+        .welcome-section h2 {
+            font-size: 2.5rem;
+            margin-bottom: 2rem;
+            font-weight: 300;
+            letter-spacing: 2px;
+        }
+
+        .welcome-text {
+            font-size: 1.2rem;
+            line-height: 1.8;
+            color: rgba(255, 255, 255, 0.7);
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 2rem;
+            margin-top: 4rem;
+        }
+
+        .feature-card {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 16px;
+            padding: 3rem 2rem;
+            text-align: center;
+            transition: all 0.4s ease;
+            cursor: pointer;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-8px);
+            border-color: rgba(44, 95, 95, 0.3);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .feature-icon {
+            margin: 0 auto 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .feature-icon img {
+            width: 160px;
+            height: 160px;
+            opacity: 0.8;
+        }
+
+        .feature-icon img[src="image4.png"] {
+            width: 320px;
+            height: 320px;
+        }
+
+        .feature-card h3 {
+            font-size: 1.3rem;
+            margin-bottom: 1rem;
+            font-weight: 500;
+        }
+
+        .feature-card p {
+            color: rgba(255, 255, 255, 0.6);
+            line-height: 1.6;
+        }
+
+        .cta-banner {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 16px;
+            text-align: center;
+            padding: 4rem 3rem;
+            margin-top: 6rem;
+        }
+
+        .cta-banner h3 {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            letter-spacing: 1px;
+        }
+
+        .cta-banner p {
+            font-size: 1.1rem;
+            margin-bottom: 2.5rem;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .cta-button {
+            display: inline-block;
+            background: transparent;
+            color: #ffffff;
+            padding: 1rem 2.5rem;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .cta-button:hover {
+            background: rgba(44, 95, 95, 0.2);
+            border-color: rgba(44, 95, 95, 0.5);
+        }
+
+        /* Study Information Page - Clean Design */
+        .study-page {
+            background: linear-gradient(135deg, #0f0f0f 0%, #1a1a1a 100%);
+            min-height: 100vh;
+            padding: 8rem 2rem 4rem;
+        }
+
+        .study-content {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .page-title {
+            font-size: 3.5rem;
+            font-weight: 300;
+            letter-spacing: 3px;
+            margin-bottom: 3rem;
+            text-align: center;
+            color: #2c5f5f;
+        }
+
+        /* Timeline */
+        .timeline-container {
+            margin: 3rem 0 5rem;
+        }
+
+        .timeline {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 600px;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 8%;
+            right: 8%;
+            height: 2px;
+            background: linear-gradient(90deg, #2c5f5f, #4a90e2, #2c5f5f);
+            z-index: 1;
+        }
+
+        .timeline-item {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: #1a1a1a;
+            border: 3px solid #2c5f5f;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1.2rem;
+            color: #2c5f5f;
+            position: relative;
+            z-index: 2;
+            transition: all 0.3s ease;
+        }
+
+        .timeline-item:hover {
+            background: #2c5f5f;
+            color: white;
+            transform: scale(1.1);
+        }
+
+        /* Sections */
+        .section {
+            margin-bottom: 5rem;
+        }
+
+        .section-title {
+            font-size: 2.2rem;
+            font-weight: 600;
+            color: #2c5f5f;
+            margin-bottom: 2rem;
+            padding-left: 2rem;
+            border-left: 4px solid #2c5f5f;
+        }
+
+        .section-content {
+            background: rgba(44, 95, 95, 0.05);
+            border: 1px solid rgba(44, 95, 95, 0.1);
+            border-radius: 16px;
+            padding: 3rem;
+        }
+
+        .two-column {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 3rem;
+            align-items: center;
+        }
+
+        .brain-illustration img {
+            width: 100%;
+            max-width: 250px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(44, 95, 95, 0.2);
+        }
+
+        .text-content {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 1.1rem;
+            line-height: 1.8;
+        }
+
+        .text-content p {
+            margin-bottom: 1.5rem;
+        }
+
+        .techniques {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 3rem;
+        }
+
+        .technique-text h3 {
+            color: #2c5f5f;
+            font-size: 1.4rem;
+            margin-bottom: 1rem;
+        }
+
+        .technique-text p {
+            color: rgba(255, 255, 255, 0.85);
+            line-height: 1.7;
+            margin-bottom: 2rem;
+        }
+
+        .technique-image img {
+            width: 100%;
+            border-radius: 12px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+        }
+
+        .experimental-img {
+            text-align: center;
+            margin: 2rem 0;
+        }
+
+        .experimental-img img {
+            width: 100%;
+            max-width: 800px;
+            border-radius: 12px;
+            box-shadow: 0 20px 40px rgba(44, 95, 95, 0.1);
+        }
+
+        .scan-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .scan-card {
+            background: rgba(44, 95, 95, 0.08);
+            border: 1px solid rgba(44, 95, 95, 0.15);
+            border-radius: 12px;
+            padding: 2rem;
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+
+        .scan-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(44, 95, 95, 0.1);
+        }
+
+        .scan-card img {
+            width: 120px;
+            height: 120px;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+        }
+
+        .scan-card h4 {
+            color: #2c5f5f;
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+        }
+
+        .scan-card p {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+
+        /* Experimental Design - Study Flow styles */
+        .study-header {
+            background: linear-gradient(135deg, #8B4513 0%, #A0522D 100%);
+            color: white;
+            text-align: center;
+            padding: 1.5rem;
+            border-radius: 12px 12px 0 0;
+            font-size: 1.4rem;
+            font-weight: 600;
+            letter-spacing: 1px;
+            margin-bottom: 0;
+        }
+
+        /* Participants page styles */
+        .participants-page .hero-section { display: none; }
+
+        .participants-page .hero-content { position: relative; z-index: 1; max-width: 1200px; margin: 0 auto; }
+        .participants-page .hero-title { font-size: 3.5rem; font-weight: 700; margin-bottom: 1rem; text-shadow: 0 4px 8px rgba(0,0,0,0.3); }
+        .participants-page .hero-title::after { content: none; display: none; }
+        .participants-page .hero-subtitle { font-size: 1.2rem; opacity: 0.9; max-width: 600px; margin: 0 auto; }
+
+        .participants-main { max-width: 1200px; margin: 0 auto; padding: 8rem 2rem 3rem; }
+
+        .participants-page .section-title { display: flex; align-items: center; gap: 1rem; }
+        .participants-page .section-number { background: linear-gradient(135deg, #2c5f5f 0%, #1a4545 100%); color: #ffffff; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; }
+
+        .participants-page .eligibility-container { background: rgba(255, 255, 255, 0.02); border: 2px solid rgba(44, 95, 95, 0.2); border-radius: 12px; padding: 2rem; margin: 2rem 0; }
+        .participants-page .eligibility-title { font-size: 1.5rem; font-weight: 600; color: #2c5f5f; text-align: center; margin-bottom: 1.5rem; }
+        .participants-page .criteria-list { display: grid; gap: 1rem; margin-bottom: 2rem; }
+        .participants-page .criteria-item { display: flex; align-items: flex-start; gap: 1rem; padding: 1rem; background: rgba(255, 255, 255, 0.02); border-radius: 8px; transition: all 0.2s ease; cursor: pointer; }
+        .participants-page .criteria-item:hover { background: rgba(44, 95, 95, 0.1); }
+        .participants-page .criteria-checkbox { width: 20px; height: 20px; accent-color: #2c5f5f; margin-top: 2px; }
+        .participants-page .criteria-text { flex: 1; font-size: 1rem; color: rgba(255, 255, 255, 0.9); }
+        .participants-page .check-button { width: 100%; padding: 1rem 2rem; background: linear-gradient(135deg, #2c5f5f 0%, #1a4545 100%); color: white; border: none; border-radius: 8px; font-size: 1.1rem; font-weight: 600; cursor: pointer; transition: all 0.3s ease; text-transform: uppercase; letter-spacing: 0.5px; }
+        .participants-page .check-button:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(44, 95, 95, 0.3); }
+        .participants-page .result-message { font-size: 1.2rem; font-weight: 600; text-align: center; margin-top: 1.5rem; padding: 1rem; border-radius: 8px; min-height: 60px; display: flex; align-items: center; justify-content: center; }
+        .participants-page .success { background: rgba(34, 197, 94, 0.1); border: 2px solid rgba(34, 197, 94, 0.3); color: #22c55e; }
+        .participants-page .warning { background: rgba(239, 68, 68, 0.1); border: 2px solid rgba(239, 68, 68, 0.3); color: #ef4444; }
+        .participants-page .celebration { font-size: 1.5rem; text-align: center; margin-top: 1rem; animation: bounce 1s infinite; }
+
+        @keyframes bounce { 0%, 20%, 50%, 80%, 100% { transform: translateY(0); } 40% { transform: translateY(-10px); } 60% { transform: translateY(-5px); } }
+
+        .participants-page .consent-container { background: rgba(59, 130, 246, 0.05); border: 1px solid rgba(59, 130, 246, 0.2); border-radius: 12px; padding: 2rem; margin: 2rem 0; }
+        .participants-page .consent-preview { width: 100%; height: 720px; border: none; border-radius: 8px; background: white; margin: 1rem 0; }
+        .participants-page .consent-links { display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center; margin-top: 1.5rem; }
+
+        .participants-page .schedule-container { background: rgba(34, 197, 94, 0.05); border: 1px solid rgba(34, 197, 94, 0.2); border-radius: 12px; padding: 2rem; margin: 2rem 0; }
+        .participants-page .schedule-info { display: grid; grid-template-columns: 1fr 2fr; gap: 2rem; margin-bottom: 2rem; align-items: start; }
+        .participants-page .location-icon { font-size: 4rem; color: #2c5f5f; text-align: center; margin-bottom: 1rem; }
+        .participants-page .schedule-details { color: rgba(255, 255, 255, 0.9); }
+        .participants-page .schedule-options { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; margin-top: 2rem; }
+
+        .participants-page .btn { display: inline-block; padding: 1rem 2rem; border-radius: 8px; text-decoration: none; font-weight: 600; text-align: center; transition: all 0.3s ease; cursor: pointer; border: none; font-size: 1rem; }
+        .participants-page .btn-primary { background: linear-gradient(135deg, #2c5f5f 0%, #1a4545 100%); color: white; }
+        .participants-page .btn-secondary { background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%); color: white; }
+        .participants-page .btn-success { background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%); color: white; }
+        .participants-page .btn:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(0,0,0,0.2); }
+
+        /* Register section - blue styling */
+        .participants-page .register-container { background: linear-gradient(135deg, rgba(30, 58, 138, 0.5) 0%, rgba(59, 130, 246, 0.5) 100%); border: 1px solid rgba(59, 130, 246, 0.35); border-radius: 12px; padding: 2rem; text-align: center; box-shadow: 0 12px 30px rgba(59, 130, 246, 0.15); }
+        .participants-page .register-container p { color: rgba(255, 255, 255, 0.9); }
+
+        .participants-page .timeline-container { background: rgba(168, 85, 247, 0.05); border: 1px solid rgba(168, 85, 247, 0.2); border-radius: 12px; padding: 2rem; margin: 2rem 0; }
+        .participants-page .timeline { display: flex; align-items: center; justify-content: center; gap: 2rem; position: relative; margin: 2rem auto; padding: 0 2rem; width: max-content; }
+        .participants-page .timeline::before { display: none; }
+        .participants-page .timeline-item { display: flex; flex-direction: column; align-items: center; justify-content: center; width: auto; height: auto; text-align: center; z-index: 2; background: #0f0f0f; padding: 1rem 1.25rem; border-radius: 12px; border: 2px solid; min-width: 170px; }
+        .participants-page .timeline-screening { border-color: #2c5f5f; }
+        .participants-page .timeline-session1 { border-color: #3b82f6; }
+        .participants-page .timeline-session2 { border-color: #22c55e; }
+        .participants-page .timeline-session3 { border-color: #22c55e; }
+        .participants-page .timeline-icon { font-size: 2rem; margin-bottom: 0.5rem; }
+        .participants-page .timeline-label { font-size: 1rem; font-weight: 600; color: rgba(255, 255, 255, 0.95); }
+        .participants-page .timeline-date { font-size: 0.8rem; color: rgba(255, 255, 255, 0.6); margin-top: 0.25rem; }
+        .participants-page .timeline-item::before, .participants-page .timeline-item::after { display: none !important; }
+
+        /* Center the Study Timeline header and remove left accent */
+        .participants-page .timeline-title { text-align: center; border-left: none; padding-left: 0; display: block; margin: 0 auto 1.5rem; }
+
+        /* FAQ page styles */
+        .faq-page { padding: 8rem 2rem 3rem; }
+        .faq-container { max-width: 900px; margin: 0 auto; }
+        .faq-header { text-align: center; margin-bottom: 3rem; }
+        .faq-title { font-size: 3.2rem; font-weight: 800; margin-bottom: 1rem; color: #0f766e; }
+        .faq-subtitle { font-size: 1.2rem; color: #6a7f7f; font-weight: 300; }
+        .faq-list { display: flex; flex-direction: column; gap: 1rem; }
+        .faq-item { background: rgba(15, 118, 110, 0.05); border: 1px solid #0f766e; border-radius: 12px; transition: all 0.3s ease; overflow: hidden; }
+        .faq-item:hover { background: rgba(15, 118, 110, 0.08); border-color: #6a7f7f; }
+        .faq-item.active { border-color: #6a7f7f; background: rgba(106, 127, 127, 0.1); }
+        .faq-question { padding: 1.5rem 2rem; cursor: pointer; display: flex; align-items: center; font-weight: 600; font-size: 1.1rem; color: rgba(255, 255, 255, 0.95); user-select: none; }
+        .faq-question:hover { color: #ffffff; }
+        .faq-icon { width: 32px; height: 32px; border-radius: 8px; background: #0f766e; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 1rem; transition: all 0.3s ease; margin-right: 1rem; flex-shrink: 0; }
+        .faq-item.active .faq-icon { transform: rotate(180deg); background: #6a7f7f; }
+        .faq-question-text { flex: 1; }
+        .faq-answer { max-height: 0; overflow: hidden; transition: max-height 0.3s ease; background: rgba(106, 127, 127, 0.03); border-top: 1px solid rgba(15, 118, 110, 0.2); }
+        .faq-item.active .faq-answer { max-height: 400px; }
+        .faq-answer-content { padding: 1.5rem 2rem 2rem 4rem; color: rgba(255, 255, 255, 0.85); font-size: 1rem; line-height: 1.7; }
+        .highlight { background: rgba(15, 118, 110, 0.25); padding: 0.2rem 0.5rem; border-radius: 4px; font-weight: 600; color: #6a7f7f; }
+        @media (max-width: 768px) {
+            .faq-title { font-size: 2.5rem; }
+            .faq-answer-content { padding: 1.5rem; }
+            .faq-question { padding: 1.2rem 1.5rem; }
+        }
+
+        /* Contact page styles */
+        .contact-page { padding: 8rem 2rem 3rem; }
+        .contact-container { max-width: 1100px; margin: 0 auto; }
+        .contact-header { text-align: center; margin-bottom: 3rem; }
+        .contact-title { font-size: 3.2rem; font-weight: 800; margin-bottom: 1rem; color: #0f766e; }
+        .contact-subtitle { font-size: 1.2rem; color: #6a7f7f; font-weight: 300; }
+        .contact-section { background: rgba(15, 118, 110, 0.05); border: 1px solid #0f766e; border-radius: 12px; padding: 3rem; margin-bottom: 2rem; transition: all 0.3s ease; }
+        .contact-section:hover { background: rgba(15, 118, 110, 0.08); border-color: #6a7f7f; }
+        .main-contact { display: grid; grid-template-columns: 300px 1fr; gap: 4rem; align-items: start; }
+        .researcher-image { width: 300px; height: 300px; border-radius: 16px; object-fit: cover; border: 3px solid #0f766e; box-shadow: 0 8px 32px rgba(15, 118, 110, 0.2); }
+        .researcher-info { padding-top: 1rem; }
+        .researcher-name { font-size: 2.2rem; font-weight: 700; color: #0f766e; margin-bottom: 0.5rem; }
+        .researcher-title { font-size: 1.1rem; color: #6a7f7f; margin-bottom: 2rem; font-weight: 400; }
+        .contact-item { display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem; }
+        .contact-icon { width: 32px; height: 32px; background: #0f766e; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: white; font-size: 1rem; flex-shrink: 0; }
+        .contact-link { color: #6a7f7f; text-decoration: none; transition: color 0.3s ease; font-size: 1.1rem; }
+        .contact-link:hover { color: #0f766e; }
+        .contact-description { color: rgba(255, 255, 255, 0.8); font-size: 1.1rem; margin-top: 2rem; padding: 1.5rem; background: rgba(106, 127, 127, 0.05); border-radius: 8px; border-left: 4px solid #6a7f7f; }
+        .section-title { font-size: 1.4rem; font-weight: 600; color: #0f766e; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem; }
+        .appointment-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 2rem; margin-top: 2rem; }
+        .appointment-card { background: rgba(106, 127, 127, 0.05); border: 1px solid #6a7f7f; border-radius: 12px; padding: 2rem; text-align: center; transition: all 0.3s ease; }
+        .appointment-card:hover { background: rgba(106, 127, 127, 0.1); transform: translateY(-4px); box-shadow: 0 8px 24px rgba(15, 118, 110, 0.1); }
+        .appointment-title { font-size: 1.2rem; font-weight: 600; color: #0f766e; margin-bottom: 1rem; }
+        .appointment-btn { display: inline-block; padding: 1rem 2rem; background: #0f766e; color: white; text-decoration: none; border-radius: 8px; font-weight: 600; transition: all 0.3s ease; }
+        .appointment-btn:hover { background: #6a7f7f; transform: translateY(-2px); }
+        .note { background: rgba(106, 127, 127, 0.1); border-left: 4px solid #6a7f7f; padding: 1.5rem 2rem; margin-top: 2rem; border-radius: 0 12px 12px 0; }
+        .note-text { color: #6a7f7f; font-style: italic; }
+        .quick-contact { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 2rem; margin-top: 1rem; }
+        .quick-item h4 { color: #0f766e; margin-bottom: 0.5rem; font-size: 1.1rem; }
+        .quick-item p { color: #6a7f7f; font-size: 1rem; }
+        @media (max-width: 768px) {
+            .contact-title { font-size: 2.5rem; }
+            .main-contact { grid-template-columns: 1fr; gap: 2rem; text-align: center; }
+            .researcher-image { width: 250px; height: 250px; margin: 0 auto; }
+            .researcher-info { padding-top: 0; }
+            .contact-section { padding: 2rem; }
+            .appointment-grid { grid-template-columns: 1fr; }
+        }
+
+        .sessions-container {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .session-card {
+            background: rgba(255, 255, 255, 0.02);
+            border: 2px solid rgba(44, 95, 95, 0.2);
+            border-radius: 16px;
+            padding: 2rem 1.5rem;
+            text-align: center;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .session-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(44, 95, 95, 0.4);
+            box-shadow: 0 15px 30px rgba(44, 95, 95, 0.1);
+        }
+
+        .session-header {
+            background: linear-gradient(135deg, #2c5f5f 0%, #1a4545 100%);
+            color: white;
+            padding: 0.8rem 1rem;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 1rem;
+            margin-bottom: 1.5rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .session-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        /* Ensure protocol boxes start at the same height */
+        .session-top {
+            height: 260px;
+            display: flex;
+            align-items: flex-start; /* top align to match all cards */
+            justify-content: center;
+            width: 100%;
+        }
+
+        .session-icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 0.5rem;
+            background: transparent;
+        }
+
+        .session-icon img {
+            width: 120px;
+            height: 120px;
+            object-fit: contain;
+        }
+
+        .session-description {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.95rem;
+            line-height: 1.4;
+        }
+
+        .arrow {
+            display: none;
+        }
+
+        .pseudo-randomized {
+            text-align: center;
+            margin: 2rem 0 1rem;
+            color: #2c5f5f;
+            font-style: italic;
+            font-size: 1.1rem;
+        }
+
+        /* Mobile responsive */
+        @media (max-width: 768px) {
+            .nav-menu { display: none; }
+            .hero { padding-left: 5%; }
+            .hero-title { font-size: 2.8rem; }
+            .two-column, .techniques { grid-template-columns: 1fr; }
+            .page-title { font-size: 2.5rem; }
+            .timeline-item { width: 40px; height: 40px; font-size: 1rem; }
+            .sessions-container { grid-template-columns: 1fr; }
+            .arrow { display: none; }
+            .session-top { height: auto; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Video Background -->
+    <div class="video-background" id="videoBg">
+        <video autoplay muted loop>
+            <source src="video1.mp4" type="video/mp4">
+        </video>
+    </div>
+
+    <!-- Circles -->
+    <div class="circle-left" id="circleLeft"></div>
+    <div class="circle-right" id="circleRight"></div>
+
+    <!-- Header -->
+    <header class="header">
+        <div class="language-bar">
+            <a href="https://sites.google.com/uhasselt.be/study-tdcs-nl/studie-informatie" class="language-link" target="_blank">
+                Toon informatie in het Nederlands
+            </a>
+        </div>
+        <nav class="nav-container">
+            <div class="logo">
+                <img src="image1.png" alt="University Logo">
+            </div>
+            <ul class="nav-menu">
+                <li><a href="#" data-page="home" class="nav-link active">Home</a></li>
+                <li><a href="#" data-page="study-info" class="nav-link">Study Information</a></li>
+                <li><a href="#" data-page="participants" class="nav-link">For participants</a></li>
+                <li><a href="#" data-page="faq" class="nav-link">FAQ</a></li>
+                <li><a href="#" data-page="contact" class="nav-link">Contact us</a></li>
+                <li><a href="#" data-page="find-us" class="nav-link">How to find us</a></li>
+                <li><a href="#" data-page="call" class="nav-link">Call for participants</a></li>
+            </ul>
+            <div class="search-icon">Search</div>
+        </nav>
+    </header>
+
+    <!-- Homepage -->
+    <div id="home" class="page active">
+        <section class="hero">
+            <h1 class="hero-title">BRAIN AGING STUDY</h1>
+        </section>
+
+        <main class="main-content">
+            <section class="welcome-section">
+                <h2>Welcome</h2>
+                <p class="welcome-text">
+                    We are conducting research on brain aging and motor function. If you are interested in participating, you will find all relevant details here.
+                </p>
+            </section>
+
+            <div class="features">
+                <div class="feature-card" data-page="study-info">
+                    <div class="feature-icon">
+                        <img src="image3.png" alt="Brain icon">
+                    </div>
+                    <h3>Study Information</h3>
+                    <p>scientific and administrative details about the study</p>
+                </div>
+
+                <div class="feature-card" data-page="participants">
+                    <div class="feature-icon">
+                        <img src="image4.png" alt="Participation icon">
+                    </div>
+                    <h3>Participating in the study</h3>
+                    <p>What to do if you want to participate</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <img src="image5.png" alt="Research group icon">
+                    </div>
+                    <h3>Our research group</h3>
+                    <p>Find out more about us and our research</p>
+                </div>
+            </div>
+
+            <div class="cta-banner">
+                <h3>Call for participants</h3>
+                <p>Ready to contribute to groundbreaking brain research?</p>
+                <a href="#" class="cta-button" data-page="participants">Get Started</a>
+            </div>
+        </main>
+    </div>
+
+    <!-- Study Information Page -->
+    <div id="study-info" class="page">
+        <div class="study-page">
+            <div class="study-content">
+                <h1 class="page-title">Study Information</h1>
+
+                <div class="section">
+                    <h2 class="section-title">Background & Rationale</h2>
+                    <div class="section-content">
+                        <div class="two-column">
+                            <div class="brain-illustration">
+                                <img src="image7.png" alt="Brain illustration">
+                            </div>
+                            <div class="text-content">
+                                <p>Aging affects the human brain, leading to structural and functional alterations with age. However, the exact mechanisms behind these changes remain unclear.</p>
+                                <p>This study aims to investigate how aging influences brain activation patterns during motor tasks. By using advanced neuroimaging and brain stimulation techniques, we seek to understand how neural networks adapt over time. The findings from this research could contribute to the development of interventions to maintain motor function in older adults.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 class="section-title">Study Design & Techniques</h2>
+                    <div class="section-content">
+                        <div class="techniques">
+                            <div class="technique-text">
+                                <h3>Neuroimaging (MRI)</h3>
+                                <p>Participants will undergo structural and functional MRI scans to examine brain activity and connectivity.</p>
+                                
+                                <h3>Non-Invasive Brain Stimulation</h3>
+                                <p>We use transcranial direct current stimulation (tDCS) to modulate brain activity and assess its effects on motor performance.</p>
+                                
+                                <h3>Motor Tasks</h3>
+                                <p>Participants will perform simple finger-tapping exercises to measure movement accuracy and speed.</p>
+                            </div>
+                            <div class="technique-image">
+                                <img src="image8.png" alt="MRI and study techniques">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 class="section-title">Experimental Design</h2>
+                    <div class="section-content">
+                        <div class="sessions-container">
+                            <!-- Screening Session -->
+                            <div class="session-card">
+                                <div class="session-top">
+                                    <div style="width:100%">
+                                        <div class="session-header">Screening</div>
+                                        <div class="session-content">
+                                            <div class="session-icon">
+                                                <img src="screening.png" alt="Screening session">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div style="margin-top: 1rem; padding: 1rem; background: rgba(44, 95, 95, 0.1); border-radius: 8px;">
+                                    <div style="color: rgba(255, 255, 255, 0.9); font-size: 0.9rem; line-height: 1.4; text-align: center;">
+                                        <strong>Protocol (60 minutes):</strong><br>
+                                        • Medical history review<br>
+                                        • Eligibility assessment<br>
+                                        • Informed consent
+                                    </div>
+                                </div>
+                                <div class="arrow">→</div>
+                            </div>
+
+                            <!-- Session 1 -->
+                            <div class="session-card">
+                                <div class="session-top">
+                                    <div style="width:100%">
+                                        <div class="session-header">Session 1</div>
+                                        <div class="session-content">
+                                            <div class="session-icon">
+                                                <img src="ses1.png" alt="Session 1 MRI">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div style="margin-top: 1rem; padding: 1rem; background: rgba(44, 95, 95, 0.1); border-radius: 8px;">
+                                    <div style="color: rgba(255, 255, 255, 0.9); font-size: 0.9rem; line-height: 1.4; text-align: center;">
+                                        <strong>Protocol (45 minutes):</strong><br>
+                                        • Structural brain imaging<br>
+                                        • Functional brain imaging<br>
+                                        • Baseline measurements
+                                    </div>
+                                </div>
+                                <div class="arrow">→</div>
+                            </div>
+
+                            <!-- Sessions 2 & 3 Combined -->
+                            <div class="session-card" style="grid-column: span 2;">
+                                <div class="session-top">
+                                    <div style="width:100%">
+                                        <div class="session-header">Sessions 2 & 3 (Counterbalanced)</div>
+                                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-top: 1rem;">
+                                            <div class="session-content">
+                                                <div class="session-icon">
+                                                    <img src="ses2.png" alt="Session 2 Active HD-tDCS">
+                                                </div>
+                                                <div class="session-description">
+                                                    <strong>Active HD-tDCS</strong>
+                                                </div>
+                                            </div>
+                                            <div class="session-content">
+                                                <div class="session-icon">
+                                                    <img src="ses3.png" alt="Session 3 Sham HD-tDCS">
+                                                </div>
+                                                <div class="session-description">
+                                                    <strong>Sham HD-tDCS</strong>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div style="margin-top: 1.5rem; padding: 1rem; background: rgba(44, 95, 95, 0.1); border-radius: 8px;">
+                                    <div style="color: rgba(255, 255, 255, 0.9); font-size: 0.9rem; line-height: 1.4; text-align: center;">
+                                        <strong>Protocol (each session ~3 hours):</strong><br>
+                                        • 1h 10min MRI (anatomical, spectroscopy, functional)<br>
+                                        • 20min HD-tDCS stimulation<br>
+                                        • 1h 10min MRI (anatomical, spectroscopy, functional)
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="pseudo-randomized">
+                            Sessions 2 & 3 are pseudo-randomized and counterbalanced
+                        </div>
+
+                        <div style="margin-top: 2rem; padding: 2rem; background: rgba(44, 95, 95, 0.08); border-radius: 12px; border: 1px solid rgba(44, 95, 95, 0.15);">
+                            <h3 style="color: #2c5f5f; margin-bottom: 1rem;">Session Details</h3>
+                            <div style="color: rgba(255, 255, 255, 0.8); line-height: 1.6;">
+                                <p><strong>HD-tDCS:</strong> High-Definition transcranial Direct Current Stimulation - a non-invasive brain stimulation technique that uses weak electrical currents to modulate brain activity in targeted regions.</p>
+                                <p><strong>Sham Stimulation:</strong> A control condition where electrodes are placed but no active stimulation is delivered, allowing researchers to isolate the specific effects of brain stimulation.</p>
+                                <p><strong>Pseudo-randomized:</strong> Sessions 2 and 3 are presented in random order to eliminate sequence effects, with equal numbers of participants receiving each order.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 class="section-title">What are we looking at?</h2>
+                    <div class="section-content">
+                        <div class="scan-grid">
+                            <div class="scan-card">
+                                <img src="image10.png" alt="Anatomical brain scan">
+                                <h4>Anatomical scans of the brain</h4>
+                                <p>These scans give us a detailed 3D image of your brain.</p>
+                            </div>
+                            <div class="scan-card">
+                                <img src="image11.png" alt="Functional brain scan">
+                                <h4>Functional scans of the brain</h4>
+                                <p>These scans measure brain activity by detecting changes in blood flow.</p>
+                            </div>
+                            <div class="scan-card">
+                                <img src="image12.png" alt="Brain neurometabolites">
+                                <h4>Brain neurometabolites</h4>
+                                <p>We measure the concentration of neurochemicals in specific regions of the brain.</p>
+                            </div>
+                            <div class="scan-card">
+                                <img src="image13.png" alt="Motor performance">
+                                <h4>Motor performance</h4>
+                                <p>We will measure how accurate you perform a motor task (finger tapping).</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 class="section-title">Scientific Output</h2>
+                    <div class="section-content">
+                        <div class="text-content">
+                            <h3 style="color: #2c5f5f; margin-bottom: 1rem;">MaRBEL 2025 Conference</h3>
+                            <p>The study methodology was presented at the <a href="https://www.kuleuven.be/brain-institute/events-and-outreach/marbel-2025-meeting" target="_blank" style="color: #2c5f5f; text-decoration: underline;">MaRBEL (Belgian MR) conference</a> held in Liege in February 2025. The presentation received positive feedback from the conference committee, demonstrating the scientific merit and methodological rigor of our research approach.</p>
+                            <p>This conference presentation represents our commitment to transparent scientific communication and sharing our research methodology with the broader neuroimaging community.</p>
+                        </div>
+                        <div class="experimental-img">
+                            <img src="image17.png" alt="MaRBEL 2025 Conference Poster">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 class="section-title">Ethical Approval & Funding</h2>
+                    <div class="section-content">
+                        <div class="text-content">
+                            <h3 style="color: #2c5f5f; margin-bottom: 1rem;">Ethical Approval</h3>
+                            <p>This study has been approved by the Ethics Committee of UHasselt (B11320240000034) and complies with all ethical guidelines for human research. Participants' data will be handled with strict confidentiality.</p>
+                            <p>The study follows the principles outlined in the Declaration of Helsinki for ethical medical research.</p>
+                            
+                            <h3 style="color: #2c5f5f; margin-bottom: 1rem; margin-top: 2.5rem;">Funding</h3>
+                            <p>This study is funded by an UHasselt Special Research Fund (BOF24DOC13).</p>
+                        
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Participants Page -->
+    <div id="participants" class="page">
+        <div class="participants-page">
+            <section class="hero-section">
+                <div class="hero-content">
+                    <h1 class="hero-title">For Participants</h1>
+                    <p class="hero-subtitle">Join our groundbreaking research on brain stimulation and cognitive function</p>
+                </div>
+            </section>
+
+            <main class="participants-main">
+                <section class="section">
+                    <div class="section-content">
+                        <h2 class="section-title"><span class="section-number">1</span>Make sure you are eligible</h2>
+                        <p>To participate in the study you should meet the following criteria:</p>
+                        <div class="eligibility-container">
+                            <h3 class="eligibility-title">Eligibility Checklist</h3>
+                            <p style="text-align: center; margin-bottom: 1.5rem; color: rgba(255, 255, 255, 0.8);">Please check all the boxes that apply to you:</p>
+                            <form id="eligibility-form">
+                                <div class="criteria-list">
+                                    <label class="criteria-item"><input type="checkbox" class="criteria criteria-checkbox"><span class="criteria-text">I am between 60-80 years old</span></label>
+                                    <label class="criteria-item"><input type="checkbox" class="criteria criteria-checkbox"><span class="criteria-text">I am willing to undergo screening, MRI procedures, and non-invasive brain stimulation</span></label>
+                                    <label class="criteria-item"><input type="checkbox" class="criteria criteria-checkbox"><span class="criteria-text">I am right-handed</span></label>
+                                    <label class="criteria-item"><input type="checkbox" class="criteria criteria-checkbox"><span class="criteria-text">I do not have any motor disabilities affecting my upper limb</span></label>
+                                    <label class="criteria-item"><input type="checkbox" class="criteria criteria-checkbox"><span class="criteria-text">I am not currently taking medication that may alter insulin sensitivity or brain metabolism</span></label>
+                                    <label class="criteria-item"><input type="checkbox" class="criteria criteria-checkbox"><span class="criteria-text">I have not been diagnosed with a mental disorder or a major neurological disease</span></label>
+                                    <label class="criteria-item"><input type="checkbox" class="criteria criteria-checkbox"><span class="criteria-text">I do not suffer from claustrophobia and can lie still on my back for 60 minutes</span></label>
+                                    <label class="criteria-item"><input type="checkbox" class="criteria criteria-checkbox"><span class="criteria-text">I have not been diagnosed with any disease that may affect cardiovascular fitness or vascular health of the brain</span></label>
+                                    <label class="criteria-item"><input type="checkbox" class="criteria criteria-checkbox"><span class="criteria-text">I have no history of vascular disease</span></label>
+                                    <label class="criteria-item"><input type="checkbox" class="criteria criteria-checkbox"><span class="criteria-text">I do not suffer from an uncontrolled metabolic disease</span></label>
+                                    <label class="criteria-item"><input type="checkbox" class="criteria criteria-checkbox"><span class="criteria-text">I do not have a pacemaker or an implanted defibrillator</span></label>
+                                    <label class="criteria-item"><input type="checkbox" class="criteria criteria-checkbox"><span class="criteria-text">I do not have an ear implant/a cochlear implant</span></label>
+                                </div>
+                                <button type="button" id="submit-button" class="check-button">Check Eligibility</button>
+                            </form>
+                            <div id="result-message" class="result-message" style="display: none;"></div>
+                            <div id="animation" class="celebration" style="display: none;">🎉 Congratulations! You are eligible for the study! 🎉</div>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="section">
+                    <h2 class="section-title"><span class="section-number">2</span>Make sure you want to participate</h2>
+                    <div class="section-content">
+                        <p>Before signing up, please review the study details, eligibility criteria, and procedures to ensure that you are comfortable with participation. If you have any doubts or questions, don't hesitate to reach out—we're happy to discuss them with you.</p>
+                        <div class="consent-container">
+                            <h3 style="color: #3b82f6; font-size: 1.5rem; text-align: center; margin-bottom: 1rem;">Informed Consent</h3>
+                            <p style="text-align: center; margin-bottom: 1.5rem; color: rgba(255, 255, 255, 0.8);">Here you can read informed consent. It contains all relevant information about the study. To read the informed consent click the link above, the preview is displayed below.</p>
+                            <iframe src="https://svitlana-o-blashchuk.github.io/Flipbook_IC/" class="consent-preview" title="Informed Consent Document"></iframe>
+                            <div class="consent-links">
+                                <a href="https://svitlana-o-blashchuk.github.io/Flipbook_IC/" target="_blank" class="btn btn-secondary">📖 Read Full Informed Consent</a>
+                                <a href="#contact" class="btn btn-primary">📞 Contact Us</a>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="section">
+                    <h2 class="section-title"><span class="section-number">3</span>Register for the Study</h2>
+                    <div class="section-content register-container">
+                        <p>Ready to participate? Complete our registration form to get started. This will help us collect basic information and match you with the appropriate study protocol.</p>
+                        <div style="text-align: center; margin: 1.5rem 0;">
+                            <a href="https://docs.google.com/forms/d/e/1FAIpQLSc1MMTi922LdIJAA5xhjjwsRbLWnoSgoRz_Nm9WrQ3kvOlFIg/viewform" target="_blank" class="btn btn-secondary" style="font-size: 1.2rem; padding: 1.25rem 2.5rem;">📝 Send us registration form</a>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="section">
+                    <h2 class="section-title"><span class="section-number">4</span>Schedule Your Screening Session</h2>
+                    <div class="section-content">
+                        <div class="schedule-container">
+                            <div class="schedule-info">
+                                <div>
+                                    <div class="location-icon">📍</div>
+                                    <h4 style="color: #22c55e; font-size: 1.3rem; text-align: center;">Screening can be done in</h4>
+                                    <p style="text-align: center; color: rgba(255, 255, 255, 0.8); margin-top: 0.5rem;">Hasselt University (Diepenbeek) or Leuven Hospital</p>
+                                </div>
+                                <div class="schedule-details">
+                                    <h4 style="color: #22c55e; margin-bottom: 1rem;">During screening we will:</h4>
+                                    <ul style="list-style: none; padding: 0;">
+                                        <li style="margin-bottom: 0.5rem;">✓ explain the study procedures</li>
+                                        <li style="margin-bottom: 0.5rem;">✓ answer any questions that you might have</li>
+                                        <li style="margin-bottom: 0.5rem;">✓ sign necessary documents</li>
+                                        <li style="margin-bottom: 0.5rem;">✓ assess your physical activity levels, health condition and cognitive functions using questionnaires</li>
+                                        <li style="margin-bottom: 0.5rem;">✓ practice performing the motor task</li>
+                                        <li style="margin-bottom: 0.5rem;">✓ familiarize you with the equipment that we will use</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="schedule-options">
+                                <a href="https://calendar.google.com/calendar/u/0/appointments/schedules/AcZssZ0hKQf8eMgHyDvKsaJDVoVtu6yO5wVVWrmqCVaTneT3VJLyjtmq8pNa-fmCpJjjyYjItch2f7mN" target="_blank" class="btn btn-primary">📅 Schedule screening session in Hasselt</a>
+                                <div style="text-align: center; color: rgba(255, 255, 255, 0.6); font-weight: bold;">OR</div>
+                                <a href="https://calendar.google.com/calendar/u/0/appointments/schedules/AcZssZ0dP37Rrs8nOWRPMfkihhMT7wsck5TzwdRchDJDbUPkh51NACLRdLZfpaNlPGYhz0xGR3ALJZEr" target="_blank" class="btn btn-primary">📅 Schedule screening session in Leuven</a>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="section">
+                    <h2 class="section-title timeline-title">Study Timeline</h2>
+                    <div class="section-content">
+                        <div class="timeline-container">
+                            <div class="timeline">
+                                <div class="timeline-item timeline-screening"><div class="timeline-icon">📋</div><div class="timeline-label">Screening Session</div><div class="timeline-date">Day 0</div></div>
+                                <div class="timeline-item timeline-session1"><div class="timeline-icon">🧠</div><div class="timeline-label">Session 1</div><div class="timeline-date">Day 7</div></div>
+                                <div class="timeline-item timeline-session2"><div class="timeline-icon">⚡</div><div class="timeline-label">Session 2</div><div class="timeline-date">Summer 2025</div></div>
+                                <div class="timeline-item timeline-session3"><div class="timeline-icon">⚡</div><div class="timeline-label">Session 3</div><div class="timeline-date">Summer 2025</div></div>
+                            </div>
+                            <div style="text-align: center; margin-top: 2rem;">
+                                <p style="color: rgba(255, 255, 255, 0.8);"><strong>UZ Leuven</strong> (Sessions 1, 2 & 3) | <strong>UZ Leuven OR University of Hasselt</strong> (Screening)</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </main>
+        </div>
+    </div>
+
+    <!-- FAQ Page -->
+    <div id="faq" class="page">
+        <div class="faq-page">
+            <div class="faq-container">
+                <div class="faq-header">
+                    <h1 class="faq-title">Frequently Asked Questions</h1>
+                    <p class="faq-subtitle">Find answers to common questions about our HD-tDCS study</p>
+                </div>
+
+                <div class="faq-list">
+                    <div class="faq-item">
+                        <div class="faq-question">
+                            <div class="faq-icon">?</div>
+                            <div class="faq-question-text">Is MRI radioactive?</div>
+                        </div>
+                        <div class="faq-answer">
+                            <div class="faq-answer-content">
+                                No, <span class="highlight">MRI is not radioactive</span> because it uses magnets and radio waves to create images, not radiation like X-rays or CT scans. The procedure is completely safe from a radiation perspective.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="faq-item">
+                        <div class="faq-question">
+                            <div class="faq-icon">?</div>
+                            <div class="faq-question-text">Is MRI safe?</div>
+                        </div>
+                        <div class="faq-answer">
+                            <div class="faq-answer-content">
+                                Yes, <span class="highlight">MRI is safe</span>. MRI magnets don't affect your body and don't cause harm to tissues or organs. The procedure has been used safely for decades in medical imaging.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="faq-item">
+                        <div class="faq-question">
+                            <div class="faq-icon">?</div>
+                            <div class="faq-question-text">Can I participate if I have metal implants?</div>
+                        </div>
+                        <div class="faq-answer">
+                            <div class="faq-answer-content">
+                                <span class="highlight">Modern implants are MRI-compatible</span>, so most of them are MRI-safe. However, it is better if you will contact us before signing up for the screening session to make sure that your implant is MRI-safe.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="faq-item">
+                        <div class="faq-question">
+                            <div class="faq-icon">?</div>
+                            <div class="faq-question-text">Is brain stimulation permanently affects my brain?</div>
+                        </div>
+                        <div class="faq-answer">
+                            <div class="faq-answer-content">
+                                No, a <span class="highlight">single stimulation session is safe</span>. You will not experience any changes in the mood or behavior. The stimulation will <span class="highlight">temporarily</span> affect your neurochemicals level in motor cortex (~1%), which will be restored after ~60 min and this alteration is not enough to cause change on an individual level.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="faq-item">
+                        <div class="faq-question">
+                            <div class="faq-icon">?</div>
+                            <div class="faq-question-text">How does brain stimulation work?</div>
+                        </div>
+                        <div class="faq-answer">
+                            <div class="faq-answer-content">
+                                The stimulation set-up delivers a <span class="highlight">small electrical current</span> through the electrodes. This current slightly changes the activity of neurons. <span class="highlight">It is safe</span> as the current is too weak and reversible as soon as the stimulation is over.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="faq-item">
+                        <div class="faq-question">
+                            <div class="faq-icon">?</div>
+                            <div class="faq-question-text">Is there a monetary compensation if I participate in the study?</div>
+                        </div>
+                        <div class="faq-answer">
+                            <div class="faq-answer-content">
+                                Yes, there is a <span class="highlight">60 euros compensation</span> for your time and participation in the complete study.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Contact Page -->
+    <div id="contact" class="page">
+        <div class="contact-page">
+            <div class="contact-container">
+                <div class="contact-header">
+                    <h1 class="contact-title">Contact Us</h1>
+                    <p class="contact-subtitle">Get in touch with our research team for questions or to schedule an appointment</p>
+                </div>
+
+                <div class="contact-section">
+                    <div class="main-contact">
+                        <div>
+                            <img src="svitlana.png" alt="Dra. Svitlana Blashchuk" class="researcher-image">
+                        </div>
+                        <div class="researcher-info">
+                            <h2 class="researcher-name">Dra. Svitlana Blashchuk</h2>
+                            <p class="researcher-title">Principal Researcher, HD-tDCS Study</p>
+                            <div class="contact-item"><div class="contact-icon">@</div><a href="mailto:svitlana.blashchuk@uhasselt.be" class="contact-link">svitlana.blashchuk@uhasselt.be</a></div>
+                            <div class="contact-item"><div class="contact-icon">📞</div><span class="contact-link">011 / 26 85 70</span></div>
+                            <div class="contact-item"><div class="contact-icon">🏛️</div><a href="https://www.uhasselt.be/en/who-is-who/detail/svitlana-blashchuk" target="_blank" class="contact-link">UHasselt Profile</a></div>
+                            <div class="contact-description">For all questions about the study, eligibility, procedures, or general inquiries</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="contact-section">
+                    <h3 class="section-title" style="justify-content: center;"><span style="background: #0f766e; color: white; padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.8rem;">STUDY</span>Study-Related Questions</h3>
+                    <div style="text-align: center;">
+                        <div class="contact-item" style="justify-content: center;"><div class="contact-icon">@</div><a href="mailto:study-tdcs@uhasselt.be" class="contact-link">study-tdcs@uhasselt.be</a></div>
+                        <p style="color: rgba(255, 255, 255, 0.7); margin-top: 1rem; font-size: 1.1rem;">For specific questions about study procedures, eligibility requirements, or technical aspects of the research</p>
+                    </div>
+                </div>
+
+                <div class="contact-section">
+                    <h3 class="section-title"><span style="background: #6a7f7f; color: white; padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.8rem;">APPOINTMENT</span>Schedule an Appointment</h3>
+                    <p style="color: rgba(255, 255, 255, 0.8); margin-bottom: 1.5rem; font-size: 1.1rem;">For concerns or study-related questions, you can schedule an appointment (online or physical):</p>
+                    <div class="appointment-grid">
+                        <div class="appointment-card"><h4 class="appointment-title">Online Consultation</h4><p style="color: #6a7f7f; margin-bottom: 1.5rem; font-size: 1rem;">Virtual meeting to discuss study details and answer your questions</p><a href="https://calendar.google.com/calendar/u/0/appointments/schedules/AcZssZ0hKQf8eMgHyDvKsaJDVoVtu6yO5wVVWrmqCVaTneT3VJLyjtmq8pNa-fmCpJjjyYjItch2f7mN" target="_blank" class="appointment-btn">Schedule Online</a></div>
+                        <div class="appointment-card"><h4 class="appointment-title">In-Person Meeting</h4><p style="color: #6a7f7f; margin-bottom: 1.5rem; font-size: 1rem;">Visit us at UHasselt campus for face-to-face consultation</p><a href="https://calendar.google.com/calendar/u/0/appointments/schedules/AcZssZ0hKQf8eMgHyDvKsaJDVoVtu6yO5wVVWrmqCVaTneT3VJLyjtmq8pNa-fmCpJjjyYjItch2f7mN" target="_blank" class="appointment-btn">Schedule in Hasselt</a></div>
+                    </div>
+                    <div class="note"><p class="note-text"><strong>Note:</strong> Both online and in-person appointments use the same scheduling system. Please specify your preference when booking.</p></div>
+                </div>
+
+                <div class="contact-section">
+                    <h3 class="section-title"><span style="background: #6a7f7f; color: white; padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.8rem;">INFO</span>Quick Contact</h3>
+                    <div class="quick-contact">
+                        <div class="quick-item"><h4>General Questions</h4><p>svitlana.blashchuk@uhasselt.be</p></div>
+                        <div class="quick-item"><h4>Study Specific</h4><p>study-tdcs@uhasselt.be</p></div>
+                        <div class="quick-item"><h4>Phone</h4><p>011 / 26 85 70</p></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            showPage('home');
+            
+            // Navigation
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const page = this.getAttribute('data-page');
+                    showPage(page);
+                    updateActiveNav(this);
+                });
+            });
+
+            // Feature cards
+            document.querySelectorAll('.feature-card[data-page]').forEach(card => {
+                card.addEventListener('click', function() {
+                    const page = this.getAttribute('data-page');
+                    showPage(page);
+                    updateActiveNavByPage(page);
+                });
+            });
+
+            // Generic handler for any element with data-page (e.g., CTA buttons)
+            document.querySelectorAll('[data-page]').forEach(el => {
+                el.addEventListener('click', function(e) {
+                    if (this.tagName.toLowerCase() === 'a') e.preventDefault();
+                    const page = this.getAttribute('data-page');
+                    if (!page) return;
+                    showPage(page);
+                    updateActiveNavByPage(page);
+                });
+            });
+
+            // Participants eligibility checker
+            document.addEventListener('click', function(e) {
+                if (e.target && e.target.id === 'submit-button') {
+                    const checkboxes = document.querySelectorAll('.criteria');
+                    let allChecked = true;
+                    let anyUnchecked = false;
+                    checkboxes.forEach(cb => { if (!cb.checked) { allChecked = false; anyUnchecked = true; } });
+                    const resultMessage = document.getElementById('result-message');
+                    const animation = document.getElementById('animation');
+                    if (!resultMessage) return;
+                    resultMessage.style.display = 'flex';
+                    if (allChecked) {
+                        resultMessage.className = 'result-message success';
+                        resultMessage.innerHTML = '✅ You are eligible for the study!';
+                        if (animation) animation.style.display = 'block';
+                    } else if (anyUnchecked) {
+                        resultMessage.className = 'result-message warning';
+                        resultMessage.innerHTML = '⚠️ You may still be eligible. Please <a href="#contact" style="color: #ef4444; text-decoration: underline;">Contact Us</a> for further evaluation.';
+                        if (animation) animation.style.display = 'none';
+                    }
+                }
+            });
+
+            // FAQ accordion interactions
+            document.addEventListener('click', function(e) {
+                const question = e.target.closest('.faq-question');
+                if (!question) return;
+                const faqItem = question.parentElement;
+                const wasActive = faqItem.classList.contains('active');
+                document.querySelectorAll('.faq-item').forEach(item => item.classList.remove('active'));
+                if (!wasActive) faqItem.classList.add('active');
+            });
+        });
+
+        function showPage(pageId) {
+            // Hide all pages
+            document.querySelectorAll('.page').forEach(page => {
+                page.classList.remove('active');
+            });
+
+            // Show selected page
+            document.getElementById(pageId).classList.add('active');
+
+            // Ensure we start at the top of the new page
+            window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+
+            // Show/hide homepage elements
+            const videoBackground = document.getElementById('videoBg');
+            const circleLeft = document.getElementById('circleLeft');
+            const circleRight = document.getElementById('circleRight');
+
+            if (pageId === 'home') {
+                videoBackground.style.display = 'block';
+                circleLeft.style.display = 'block';
+                circleRight.style.display = 'block';
+            } else {
+                videoBackground.style.display = 'none';
+                circleLeft.style.display = 'none';
+                circleRight.style.display = 'none';
+            }
+        }
+
+        function updateActiveNav(clickedLink) {
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.classList.remove('active');
+            });
+            clickedLink.classList.add('active');
+        }
+
+        function updateActiveNavByPage(pageId) {
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('data-page') === pageId) {
+                    link.classList.add('active');
+                }
+            });
+        }
+    </script>
+</body>
+</html>
