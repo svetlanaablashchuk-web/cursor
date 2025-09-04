@@ -1820,11 +1820,10 @@
             const circleRight = document.getElementById('circleRight');
 
             if (pageId === 'home') {
-                // Keep video visible; hide decorative circles on small screens
-                const isSmall = window.matchMedia('(max-width: 768px)').matches;
+                // Keep video and decorative circles visible on all screen sizes
                 videoBackground.style.display = 'block';
-                circleLeft.style.display = isSmall ? 'none' : 'block';
-                circleRight.style.display = isSmall ? 'none' : 'block';
+                circleLeft.style.display = 'block';
+                circleRight.style.display = 'block';
                 const bgVideoEl = videoBackground.querySelector('video');
                 if (bgVideoEl) {
                     bgVideoEl.muted = true;
