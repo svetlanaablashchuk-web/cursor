@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Brain Aging Study</title>
+    <link rel="preload" as="video" href="video1.mp4" type="video/mp4">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
         
@@ -108,7 +109,7 @@
             left: 0;
             width: 100vw;
             height: 100vh;
-            z-index: 1;
+            z-index: 1; /* background layer */
         }
 
         .video-background video {
@@ -129,7 +130,7 @@
             border-top: 4px solid rgba(255, 255, 255, 0.8);
             border-radius: 50%;
             transform: translate(-50%, -50%);
-            z-index: 5;
+            z-index: 2; /* above video */
             animation: spinAndSlideLeft 8s ease-out forwards;
         }
 
@@ -143,7 +144,7 @@
             border-bottom: 4px solid rgba(255, 255, 255, 0.7);
             border-radius: 50%;
             transform: translate(50%, -50%);
-            z-index: 5;
+            z-index: 2; /* above video */
             animation: spinAndSlideRight 8s ease-out 0.5s forwards;
         }
 
@@ -1107,7 +1108,7 @@
 <body>
     <!-- Video Background -->
     <div class="video-background" id="videoBg">
-        <video autoplay muted loop playsinline preload="auto">
+        <video autoplay muted loop playsinline webkit-playsinline preload="auto">
             <source src="video1.mp4" type="video/mp4">
         </video>
     </div>
@@ -1747,6 +1748,10 @@
                 bgVideoEl.muted = true;
                 tryPlay();
                 bgVideoEl.addEventListener('canplay', tryPlay, { once: true });
+                window.addEventListener('load', tryPlay);
+                document.addEventListener('visibilitychange', () => {
+                    if (!document.hidden) tryPlay();
+                });
             }
             
             // Navigation
