@@ -996,7 +996,7 @@
 
         .find-us-page .contact-info {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
             gap: 1.5rem;
             margin-top: 2rem;
             padding: 2rem;
@@ -1005,17 +1005,26 @@
             border: 1px solid rgba(106, 127, 127, 0.2);
         }
 
-        .find-us-page .contact-item { text-align: center; }
+        .find-us-page .contact-item {
+            text-align: left;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 0.25rem;
+        }
 
         .find-us-page .contact-item h4 {
             color: #0f766e;
-            margin-bottom: 0.5rem;
+            margin: 0 0 0.25rem 0;
             font-size: 1.1rem;
         }
 
         .find-us-page .contact-item p {
             color: #6a7f7f;
             font-size: 1rem;
+            margin: 0;
+            word-break: break-word;
+            overflow-wrap: anywhere;
         }
 
         .find-us-page .contact-item a {
