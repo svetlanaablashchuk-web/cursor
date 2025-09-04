@@ -1082,7 +1082,7 @@
 <body>
     <!-- Video Background -->
     <div class="video-background" id="videoBg">
-        <video autoplay muted loop>
+        <video autoplay muted loop playsinline preload="auto">
             <source src="video1.mp4" type="video/mp4">
         </video>
     </div>
@@ -1715,6 +1715,14 @@
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             showPage('home');
+            // Try to immediately start background video
+            const bgVideoEl = document.querySelector('#videoBg video');
+            if (bgVideoEl) {
+                const tryPlay = () => bgVideoEl.play().catch(() => {});
+                bgVideoEl.muted = true;
+                tryPlay();
+                bgVideoEl.addEventListener('canplay', tryPlay, { once: true });
+            }
             
             // Navigation
             document.querySelectorAll('.nav-link').forEach(link => {
@@ -1812,11 +1820,16 @@
             const circleRight = document.getElementById('circleRight');
 
             if (pageId === 'home') {
-                // Hide decorative background on very small screens for performance/clarity
+                // Keep video visible; hide decorative circles on small screens
                 const isSmall = window.matchMedia('(max-width: 768px)').matches;
-                videoBackground.style.display = isSmall ? 'none' : 'block';
+                videoBackground.style.display = 'block';
                 circleLeft.style.display = isSmall ? 'none' : 'block';
                 circleRight.style.display = isSmall ? 'none' : 'block';
+                const bgVideoEl = videoBackground.querySelector('video');
+                if (bgVideoEl) {
+                    bgVideoEl.muted = true;
+                    bgVideoEl.play().catch(() => {});
+                }
             } else {
                 videoBackground.style.display = 'none';
                 circleLeft.style.display = 'none';
