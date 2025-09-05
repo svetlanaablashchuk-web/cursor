@@ -889,15 +889,19 @@
             .participants-page .timeline-title { font-size: 1.4rem; }
 
             /* Consistent mobile container width across Participants sections */
-            .participants-page .section-content,
-            .participants-page .eligibility-container,
-            .participants-page .consent-container,
-            .participants-page .schedule-container,
-            .participants-page .timeline-container,
-            .participants-page .register-container {
+            .participants-page .section-content {
                 max-width: 640px;
                 margin-left: auto;
                 margin-right: auto;
+                width: 100%;
+                padding: 1.25rem;
+            }
+            /* Inner containers fill the section-content width without additional max-width */
+            .participants-page .eligibility-container,
+            .participants-page .consent-container,
+            .participants-page .schedule-container,
+            .participants-page .timeline-container {
+                max-width: none;
                 width: 100%;
             }
 
