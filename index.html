@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Brain Aging Study</title>
+    <link rel="preload" as="video" href="video1.mp4" type="video/mp4">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
         
@@ -19,6 +20,65 @@
             color: #ffffff;
             line-height: 1.6;
         }
+
+        body.splash-active { overflow: hidden; }
+
+        /* Splash Screen */
+        .splash-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: #000000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            cursor: pointer;
+            transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+        }
+
+        .splash-screen.fade-out {
+            opacity: 0;
+            transform: scale(1.05);
+            pointer-events: none;
+        }
+
+        .splash-logo {
+            max-width: 80vw;
+            max-height: 60vh;
+            width: auto;
+            height: auto;
+            transition: transform 0.3s ease;
+            filter: drop-shadow(0 10px 30px rgba(255, 255, 255, 0.1));
+        }
+
+        .splash-logo:hover { transform: scale(1.05); }
+
+        .splash-text {
+            margin-top: 3rem;
+            font-size: 1.5rem;
+            font-weight: 300;
+            letter-spacing: 2px;
+            text-align: center;
+            opacity: 0.8;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        .loading-indicator { margin-top: 2rem; display: flex; align-items: center; gap: 1rem; font-size: 1rem; color: rgba(255, 255, 255, 0.6); }
+        .loading-dots { display: flex; gap: 0.5rem; }
+        .loading-dot { width: 8px; height: 8px; background: rgba(255, 255, 255, 0.6); border-radius: 50%; animation: loadingPulse 1.4s ease-in-out infinite both; }
+        .loading-dot:nth-child(1) { animation-delay: -0.32s; }
+        .loading-dot:nth-child(2) { animation-delay: -0.16s; }
+
+        @keyframes pulse { 0%, 100% { opacity: 0.8; } 50% { opacity: 1; } }
+        @keyframes loadingPulse { 0%, 80%, 100% { transform: scale(0.8); opacity: 0.5; } 40% { transform: scale(1); opacity: 1; } }
+
+        /* Main website transitions */
+        .main-website { opacity: 0; transform: translateY(20px); transition: opacity 0.8s ease-out, transform 0.8s ease-out; pointer-events: none; }
+        .main-website.show { opacity: 1; transform: translateY(0); pointer-events: auto; }
 
         /* Header */
         .header {
@@ -81,12 +141,18 @@
             background: rgba(44, 95, 95, 0.2);
         }
 
-        .search-icon {
-            color: rgba(255, 255, 255, 0.7);
-            padding: 0.5rem 1rem;
+        
+
+        /* Mobile menu toggle (hidden on desktop) */
+        .mobile-menu-toggle {
+            display: none;
+            background: rgba(255, 255, 255, 0.05);
+            color: rgba(255, 255, 255, 0.9);
             border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 5px;
+            border-radius: 6px;
+            padding: 0.5rem 0.75rem;
             cursor: pointer;
+            font-size: 1.1rem;
         }
 
         /* Video background for homepage */
@@ -96,7 +162,7 @@
             left: 0;
             width: 100vw;
             height: 100vh;
-            z-index: 1;
+            z-index: 1; /* background layer */
         }
 
         .video-background video {
@@ -117,7 +183,7 @@
             border-top: 4px solid rgba(255, 255, 255, 0.8);
             border-radius: 50%;
             transform: translate(-50%, -50%);
-            z-index: 5;
+            z-index: 2; /* above video */
             animation: spinAndSlideLeft 8s ease-out forwards;
         }
 
@@ -131,7 +197,7 @@
             border-bottom: 4px solid rgba(255, 255, 255, 0.7);
             border-radius: 50%;
             transform: translate(50%, -50%);
-            z-index: 5;
+            z-index: 2; /* above video */
             animation: spinAndSlideRight 8s ease-out 0.5s forwards;
         }
 
@@ -256,12 +322,19 @@
             text-align: center;
             transition: all 0.4s ease;
             cursor: pointer;
+            text-decoration: none;
+            color: inherit;
+            display: block;
         }
 
         .feature-card:hover {
             transform: translateY(-8px);
             border-color: rgba(44, 95, 95, 0.3);
             box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        a.feature-card:visited {
+            color: inherit;
         }
 
         .feature-icon {
@@ -748,24 +821,488 @@
 
         /* Mobile responsive */
         @media (max-width: 768px) {
-            .nav-menu { display: none; }
+            .nav-container { padding: 0.5rem 1rem; }
+            .mobile-menu-toggle { display: inline-block; }
+            .nav-menu {
+                display: none;
+                position: fixed;
+                top: 96px; /* header height approx */
+                left: 0;
+                right: 0;
+                padding: 1rem;
+                background: rgba(15, 15, 15, 0.98);
+                backdrop-filter: blur(12px);
+                border-top: 1px solid rgba(255, 255, 255, 0.08);
+                flex-direction: column;
+                gap: 0.75rem;
+                z-index: 1001;
+            }
+            .nav-menu.open { display: flex; }
+            .nav-menu a { display: block; padding: 0.75rem 1rem; }
             .hero { padding-left: 5%; }
             .hero-title { font-size: 2.8rem; }
             .two-column, .techniques { grid-template-columns: 1fr; }
             .page-title { font-size: 2.5rem; }
             .timeline-item { width: 40px; height: 40px; font-size: 1rem; }
             .sessions-container { grid-template-columns: 1fr; }
+            /* Ensure each session card takes full width and stacks */
+            .sessions-container .session-card { grid-column: 1 / -1 !important; margin-bottom: 1rem; }
+            /* Override inline span for combined Sessions 2 & 3 card */
+            .sessions-container .session-card[style*="grid-column"] { grid-column: 1 / -1 !important; }
+            /* Stack inner two-column grid inside the combined card */
+            .sessions-container .session-card [style*="grid-template-columns"] { grid-template-columns: 1fr !important; }
             .arrow { display: none; }
             .session-top { height: auto; }
+            /* Reduce big iframes/images for small screens */
+            .participants-page .consent-preview { height: 420px; }
+            .find-us-page .building-image { height: 220px; }
+            .find-us-page .map-embed { height: 220px; }
+
+            /* Participants page mobile fixes */
+            .participants-main { padding: 7rem 1rem 2rem; }
+            .participants-page .section-title { font-size: 1.4rem; }
+            .participants-page .criteria-list { gap: 0.75rem; }
+            .participants-page .criteria-item { padding: 0.75rem; }
+            .participants-page .check-button { width: 100%; }
+            .participants-page .consent-container { padding: 1rem; }
+            .participants-page .consent-links { gap: 0.75rem; }
+            .participants-page .btn { width: 100%; }
+            .participants-page .schedule-info { grid-template-columns: 1fr; gap: 1rem; }
+            .participants-page .schedule-options { grid-template-columns: 1fr; gap: 0.75rem; }
+            .participants-page .schedule-container { padding: 1.25rem; }
+            .participants-page .schedule-details { word-break: break-word; overflow-wrap: anywhere; }
+            .participants-page .schedule-container ul { padding-left: 0; margin: 0; }
+            .participants-page .schedule-container li { word-break: break-word; }
+            .participants-page .timeline {
+                width: 100% !important;
+                overflow: visible !important;
+                flex-direction: column !important;
+                align-items: stretch !important;
+                justify-content: flex-start !important;
+                padding: 0 !important;
+                gap: 0.75rem !important;
+            }
+            .participants-page .timeline-item {
+                min-width: auto !important;
+                width: 100% !important;
+            }
+            .participants-page .timeline-title { font-size: 1.4rem; }
+
+            /* Consistent mobile container width across Participants sections */
+            .participants-page .section-content {
+                max-width: 640px;
+                margin-left: auto;
+                margin-right: auto;
+                width: 100%;
+                padding: 1.25rem;
+            }
+            /* Inner containers fill the section-content width without additional max-width */
+            .participants-page .eligibility-container,
+            .participants-page .consent-container,
+            .participants-page .schedule-container,
+            .participants-page .timeline-container {
+                max-width: none;
+                width: 100%;
+            }
+
+            /* Consistent mobile container width for Study Information sections */
+            .study-page .section-content {
+                max-width: 640px;
+                margin-left: auto;
+                margin-right: auto;
+                width: 100%;
+            }
+
+            /* Consistent mobile container width for How to Find Us */
+            .find-us-page .location-section,
+            .find-us-page .contact-info {
+                max-width: 640px;
+                margin-left: auto;
+                margin-right: auto;
+                width: 100%;
+            }
+        }
+
+        /* How to Find Us page styles */
+        .find-us-page {
+            padding: 8rem 2rem 3rem;
+            background: #000000;
+            color: #ffffff;
+            min-height: 100vh;
+        }
+
+        .find-us-page .location-container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .find-us-page .location-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .find-us-page .location-title {
+            font-size: 3.5rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+            color: #0f766e;
+        }
+
+        .find-us-page .location-subtitle {
+            font-size: 1.2rem;
+            color: #6a7f7f;
+            font-weight: 300;
+        }
+
+        .find-us-page .location-section {
+            background: rgba(15, 118, 110, 0.05);
+            border: 1px solid #0f766e;
+            border-radius: 16px;
+            padding: 3rem;
+            margin-bottom: 3rem;
+            transition: all 0.3s ease;
+        }
+
+        .find-us-page .location-section:hover {
+            background: rgba(15, 118, 110, 0.08);
+            border-color: #6a7f7f;
+        }
+
+        .find-us-page .location-header-section {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .find-us-page .location-pin-icon {
+            width: 80px;
+            height: 80px;
+            background: #0f766e;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            position: relative;
+        }
+
+        .find-us-page .location-pin-icon::before {
+            content: '';
+            width: 24px;
+            height: 32px;
+            background: white;
+            border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+            position: relative;
+        }
+
+        .find-us-page .location-pin-icon::after {
+            content: '';
+            width: 8px;
+            height: 8px;
+            background: #0f766e;
+            border-radius: 50%;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -60%);
+        }
+
+        .find-us-page .hospital-icon {
+            background: #6a7f7f;
+        }
+
+        .find-us-page .hospital-icon::before {
+            content: '';
+            width: 20px;
+            height: 20px;
+            background: white;
+            position: relative;
+        }
+
+        .find-us-page .hospital-icon::after {
+            content: '';
+            width: 4px;
+            height: 16px;
+            background: #6a7f7f;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            box-shadow: -6px 0 0 0 #6a7f7f, 6px 0 0 0 #6a7f7f, 0 -6px 0 0 #6a7f7f, 0 6px 0 0 #6a7f7f;
+        }
+
+        .find-us-page .location-info { flex: 1; }
+
+        .find-us-page .location-name {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #0f766e;
+            margin-bottom: 0.5rem;
+        }
+
+        .find-us-page .location-type {
+            font-size: 1.1rem;
+            color: #6a7f7f;
+            margin-bottom: 1rem;
+        }
+
+        .find-us-page .address {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 1.1rem;
+        }
+
+        .find-us-page .address-line { margin-bottom: 0.25rem; }
+
+        .find-us-page .content-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 3rem;
+            align-items: start;
+        }
+
+        .find-us-page .map-container { position: relative; }
+
+        .find-us-page .map-embed {
+            width: 100%;
+            height: 300px;
+            border: 2px solid #0f766e;
+            border-radius: 12px;
+            margin-bottom: 1rem;
+        }
+
+        .find-us-page .building-image {
+            width: 100%;
+            height: 300px;
+            object-fit: cover;
+            border: 2px solid #0f766e;
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(15, 118, 110, 0.2);
+        }
+
+        .find-us-page .directions-section {
+            background: rgba(106, 127, 127, 0.05);
+            border: 1px solid #6a7f7f;
+            border-radius: 12px;
+            padding: 2rem;
+            margin-top: 2rem;
+        }
+
+        .find-us-page .directions-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #0f766e;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .find-us-page .directions-pin-icon {
+            width: 32px;
+            height: 32px;
+            background: #0f766e;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            flex-shrink: 0;
+        }
+
+        .find-us-page .directions-pin-icon::before {
+            content: '';
+            width: 12px;
+            height: 16px;
+            background: white;
+            border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+        }
+
+        .find-us-page .directions-pin-icon::after {
+            content: '';
+            width: 4px;
+            height: 4px;
+            background: #0f766e;
+            border-radius: 50%;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -60%);
+        }
+
+        .find-us-page .transport-option {
+            margin-bottom: 1.5rem;
+            padding: 1rem;
+            background: rgba(15, 118, 110, 0.03);
+            border-radius: 8px;
+            border-left: 4px solid #6a7f7f;
+        }
+
+        .find-us-page .transport-title {
+            font-weight: 600;
+            color: #6a7f7f;
+            margin-bottom: 0.5rem;
+            font-size: 1rem;
+        }
+
+        .find-us-page .transport-desc {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.95rem;
+        }
+
+        .find-us-page .contact-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+            padding: 2rem;
+            background: rgba(106, 127, 127, 0.05);
+            border-radius: 12px;
+            border: 1px solid rgba(106, 127, 127, 0.2);
+        }
+
+        .find-us-page .contact-item {
+            text-align: left;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 0.25rem;
+        }
+
+        .find-us-page .contact-item h4 {
+            color: #0f766e;
+            margin: 0 0 0.25rem 0;
+            font-size: 1.1rem;
+        }
+
+        .find-us-page .contact-item p {
+            color: #6a7f7f;
+            font-size: 1rem;
+            margin: 0;
+            word-break: break-word;
+            overflow-wrap: anywhere;
+        }
+
+        .find-us-page .contact-item a {
+            color: #6a7f7f;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .find-us-page .contact-item a:hover { color: #0f766e; }
+
+        @media (max-width: 768px) {
+            .find-us-page .location-container { padding: 1rem; }
+            .find-us-page .location-title { font-size: 2.5rem; }
+            .find-us-page .location-section { padding: 2rem; }
+            .find-us-page .location-header-section { flex-direction: column; text-align: center; gap: 1.5rem; }
+            .find-us-page .content-grid { grid-template-columns: 1fr; gap: 2rem; }
+            .find-us-page .location-pin-icon { width: 60px; height: 60px; }
+            .find-us-page .location-name { font-size: 1.6rem; }
         }
     </style>
 </head>
 <body>
+    <!-- Splash Screen -->
+    <div class="splash-screen" id="splashScreen">
+        <img src="image3.png" alt="Brain Aging Study Logo" class="splash-logo">
+        <div class="splash-text">Click to Enter</div>
+    </div>
+
+    <!-- Main Website (hidden initially) -->
+    <div class="main-website" id="mainWebsite" style="pointer-events:none;">
     <!-- Video Background -->
     <div class="video-background" id="videoBg">
-        <video autoplay muted loop>
+        <video autoplay muted loop playsinline webkit-playsinline preload="auto">
             <source src="video1.mp4" type="video/mp4">
         </video>
+    </div>
+
+    <!-- How to Find Us Page -->
+    <div id="find-us" class="page">
+        <div class="find-us-page">
+            <div class="location-container">
+                <div class="location-header">
+                    <h1 class="location-title">How to Find Us</h1>
+                    <p class="location-subtitle">Visit our research facilities at two convenient locations</p>
+                </div>
+
+                <div class="location-section">
+                    <div class="location-header-section">
+                        <div class="location-pin-icon"></div>
+                        <div class="location-info">
+                            <h2 class="location-name">Our Research Group</h2>
+                            <p class="location-type">Hasselt University - Campus Diepenbeek - REVAL</p>
+                            <div class="address">
+                                <div class="address-line">Wetenschapspark 7</div>
+                                <div class="address-line">Diepenbeek, 3590</div>
+                                <div class="address-line">Belgium</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="content-grid">
+                        <div>
+                            <iframe 
+                                class="map-embed"
+                                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2522.8445678901234!2d5.4435678901234!3d50.9234567890123!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x47c0e2f123456789%3A0x123456789abcdef!2sWetenschapspark%207%2C%203590%20Diepenbeek%2C%20Belgium!5e0!3m2!1sen!2sbe!4v1234567890123!5m2!1sen!2sbe"
+                                allowfullscreen=""
+                                loading="lazy"
+                                referrerpolicy="no-referrer-when-downgrade">
+                            </iframe>
+                        </div>
+                        <div>
+                            <img src="loc1.png" alt="Hasselt University REVAL Building" class="building-image">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="location-section">
+                    <div class="location-header-section">
+                        <div class="location-pin-icon hospital-icon"></div>
+                        <div class="location-info">
+                            <h2 class="location-name">Study Location</h2>
+                            <p class="location-type">UZ Leuven - University Hospital</p>
+                            <div class="address">
+                                <div class="address-line">Herestraat 49, 3000 Leuven</div>
+                                <div class="address-line">Belgium</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="content-grid">
+                        <div>
+                            <iframe 
+                                class="map-embed"
+                                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2519.1234567890123!2d4.7012345678901!3d50.8789012345678!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x47c1610987654321%3A0x987654321fedcba!2sHerestraat%2049%2C%203000%20Leuven%2C%20Belgium!5e0!3m2!1sen!2sbe!4v1234567890987!5m2!1sen!2sbe"
+                                allowfullscreen=""
+                                loading="lazy"
+                                referrerpolicy="no-referrer-when-downgrade">
+                            </iframe>
+                        </div>
+                        <div>
+                            <img src="loc2.png" alt="UZ Leuven Hospital Building" class="building-image">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="contact-info">
+                    <div class="contact-item">
+                        <h4>Questions about locations?</h4>
+                        <p><a href="mailto:svitlana.blashchuk@uhasselt.be">svitlana.blashchuk@uhasselt.be</a></p>
+                    </div>
+                    <div class="contact-item">
+                        <h4>Phone</h4>
+                        <p>011 / 26 85 70</p>
+                    </div>
+                    <div class="contact-item">
+                        <h4>Study Email</h4>
+                        <p><a href="mailto:study-tdcs@uhasselt.be">study-tdcs@uhasselt.be</a></p>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <!-- Circles -->
@@ -783,6 +1320,7 @@
             <div class="logo">
                 <img src="image1.png" alt="University Logo">
             </div>
+            <button class="mobile-menu-toggle" id="mobileMenuToggle" aria-label="Toggle navigation">☰</button>
             <ul class="nav-menu">
                 <li><a href="#" data-page="home" class="nav-link active">Home</a></li>
                 <li><a href="#" data-page="study-info" class="nav-link">Study Information</a></li>
@@ -790,9 +1328,7 @@
                 <li><a href="#" data-page="faq" class="nav-link">FAQ</a></li>
                 <li><a href="#" data-page="contact" class="nav-link">Contact us</a></li>
                 <li><a href="#" data-page="find-us" class="nav-link">How to find us</a></li>
-                <li><a href="#" data-page="call" class="nav-link">Call for participants</a></li>
             </ul>
-            <div class="search-icon">Search</div>
         </nav>
     </header>
 
@@ -827,13 +1363,13 @@
                     <p>What to do if you want to participate</p>
                 </div>
 
-                <div class="feature-card">
+                <a class="feature-card" href="https://brains-lab.com/" target="_blank" rel="noopener noreferrer">
                     <div class="feature-icon">
                         <img src="image5.png" alt="Research group icon">
                     </div>
                     <h3>Our research group</h3>
                     <p>Find out more about us and our research</p>
-                </div>
+                </a>
             </div>
 
             <div class="cta-banner">
@@ -1099,7 +1635,7 @@
                             <iframe src="https://svitlana-o-blashchuk.github.io/Flipbook_IC/" class="consent-preview" title="Informed Consent Document"></iframe>
                             <div class="consent-links">
                                 <a href="https://svitlana-o-blashchuk.github.io/Flipbook_IC/" target="_blank" class="btn btn-secondary">📖 Read Full Informed Consent</a>
-                                <a href="#contact" class="btn btn-primary">📞 Contact Us</a>
+                                <a href="#" data-page="contact" class="btn btn-primary">📞 Contact Us</a>
                             </div>
                         </div>
                     </div>
@@ -1310,6 +1846,25 @@
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             showPage('home');
+            document.body.classList.add('splash-active');
+            const splashScreen = document.getElementById('splashScreen');
+            const mainWebsite = document.getElementById('mainWebsite');
+            const bgVideoEl = document.querySelector('#videoBg video');
+            const tryPlay = () => bgVideoEl && bgVideoEl.play().catch(() => {});
+            if (bgVideoEl) { bgVideoEl.muted = true; tryPlay(); window.addEventListener('load', tryPlay); }
+
+            function enterMainWebsite() {
+                splashScreen.classList.add('fade-out');
+                setTimeout(() => {
+                    splashScreen.style.display = 'none';
+                    mainWebsite.classList.add('show');
+                    mainWebsite.style.pointerEvents = 'auto';
+                    document.body.classList.remove('splash-active');
+                    tryPlay();
+                }, 400);
+            }
+
+            splashScreen.addEventListener('click', enterMainWebsite);
             
             // Navigation
             document.querySelectorAll('.nav-link').forEach(link => {
@@ -1320,6 +1875,20 @@
                     updateActiveNav(this);
                 });
             });
+
+            // Mobile menu toggle
+            const mobileToggle = document.getElementById('mobileMenuToggle');
+            const navMenu = document.querySelector('.nav-menu');
+            if (mobileToggle && navMenu) {
+                mobileToggle.addEventListener('click', function() {
+                    navMenu.classList.toggle('open');
+                });
+                // Close menu on nav click
+                navMenu.addEventListener('click', function(e) {
+                    const link = e.target.closest('a.nav-link');
+                    if (link) navMenu.classList.remove('open');
+                });
+            }
 
             // Feature cards
             document.querySelectorAll('.feature-card[data-page]').forEach(card => {
@@ -1393,9 +1962,15 @@
             const circleRight = document.getElementById('circleRight');
 
             if (pageId === 'home') {
+                // Keep video and decorative circles visible on all screen sizes
                 videoBackground.style.display = 'block';
                 circleLeft.style.display = 'block';
                 circleRight.style.display = 'block';
+                const bgVideoEl = videoBackground.querySelector('video');
+                if (bgVideoEl) {
+                    bgVideoEl.muted = true;
+                    bgVideoEl.play().catch(() => {});
+                }
             } else {
                 videoBackground.style.display = 'none';
                 circleLeft.style.display = 'none';
